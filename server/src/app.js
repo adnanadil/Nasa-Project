@@ -1,11 +1,15 @@
 const express = require('express')
+var cors = require('cors')
+
 const PORT = process.env.PORT || 3000
 
-const planetRoute = require('./routes/planets/planets.router')
+const planetsRoute = require('./routes/planets/planets.router')
 
 
 const app = express()
-app.use(planetRoute)
+app.use(cors())
+app.use(express.json())
+app.use(planetsRoute)
 
 // app.listen(PORT, () => {
 //     console.log(`Hello there ${PORT}`)

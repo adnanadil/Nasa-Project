@@ -1,5 +1,10 @@
-function getPlanets (req,res) {
-    res.send('From Controller')
+const planets = require('../../models/planets.model')
+
+function getAllPlanets (req,res) {
+    // We have return to make sure that only there is on res in the function.
+    return res.status(200).send(planets)
 }
 
-module.exports = getPlanets
+module.exports = {
+    getAllPlanets
+}
