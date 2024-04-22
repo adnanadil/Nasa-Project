@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon src/server.js",
+    "test": "PORT=8000 nodemon src/server.js",
     "start": "PORT=4000 node src/server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "csv-parse": "^5.5.5",
     "express": "^4.19.2",
     "nodemon": "^3.1.0"
   }
