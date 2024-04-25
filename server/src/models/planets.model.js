@@ -18,22 +18,72 @@ const { error } = require('console')
 // running in.
 const filePath = path.join(__dirname, '..' , '..', 'data', 'kepler_data.csv') 
 
-console.log(filePath)
+const habitualPlanets = []
 
-// Now we have to read this file and csv parse it 
-fs.createReadStream(filePath)
-.pipe(parse({
-    comment: '#',
-    columns: true,
-}))
-.on('data', (data) => console.log(data))
-.on('error', () =>{
-    console.log(`We got an error: ${error}`)
+const checkHabitualPlanets = (planet) => {
+    return planet['koi_disposition'] === 'CONFIRMED'
+    && planet['koi_insol'] > 0.36 && planet['koi_insol'] < 1.11
+    && planet['koi_prad'] < 1.6;
+}
+
+// NOTE: THE ABOVE LOGIC IS ASYNC THAT IS PLANETS EXPORTED AS AN EMPTY ARRAY 
+// EVEN BEFORE THE ARRAY IS POPULATED FROM THE DATA FROM THE FILE AS THE FILE STREAM
+// IS AN ASYNC PROCESS.... 
+
+// Solution: We have to make use of promises in JS 
+// An idea of promises: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+// Another like you can use: https://www.w3schools.com/js/js_promise.asp
+// Note if you confused with fetch in that case fetch itself is promsie. 
+// So now !!! : We will decleare the fs.createReadStream as a promise, export it in app.js 
+// only when it is resolved we will make the server listen for request by putting the listen 
+// code after the async await of this is completed. 
+
+/*
+// Example of promises with .then() and async await. 
+const getPlanetsPromise = new Promise ((resolve, reject) => {
+
+    resolve("I am done")
 })
 
+getPlanetsPromise.then((result) => console.log(`Yooooo: ${result}`))
 
-console.log(filePath)
+async function waitForPlanets() {
+    const result = await getPlanetsPromise
+    console.log(`Result from asyn await: ${result}`)
+}
 
-const planets = [1]
+waitForPlanets()
+*/
 
-module.exports = planets
+// Now we have to read the file which will come as stream and csv parse it to get 
+// it in the form of data that JS can read  
+
+const getPlanetsPromise = new Promise ((resolve, reject) => {
+
+    fs.createReadStream(filePath)
+    .pipe(parse({
+        comment: '#',
+        columns: true,
+    }))
+    .on('data', (data) => {
+        // Here we will filter the data and add only specific planets
+        if (checkHabitualPlanets(data)){
+            // Add the planet to the list 
+            habitualPlanets.push(data)
+        }
+    })
+    .on('error', (error) =>{
+        reject(error)
+    })
+    .on('end', () => resolve(habitualPlanets))
+
+})
+// Now the above code (Promise) will be exported and we will import it in the server.js
+// which is the start of the app and there we will implement then async fuciton.  
+
+
+// Tips to export: https://www.tutorialsteacher.com/nodejs/nodejs-module-exports
+module.exports = {
+    planets: habitualPlanets,
+    getPlanetsPromise: getPlanetsPromise
+}
