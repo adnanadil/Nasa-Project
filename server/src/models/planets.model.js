@@ -7,7 +7,7 @@
 
 // Basically we use the file system of node to read the file and this in the form of bytes 
 // then pipe this stream so that we can convert the byte into data that makes and for that 
-// we need csv parser
+// we need csv parser.
 
 const fs = require('fs')
 const {parse} = require('csv-parse')
