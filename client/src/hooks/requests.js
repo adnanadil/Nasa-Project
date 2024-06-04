@@ -26,6 +26,8 @@ async function httpSubmitLaunch(launch) {
       headers: {
         "Content-Type": "application/json",
       },
+      // Because our data was in the form of object and we can only send JSON hence 
+      // we convert it. 
       body: JSON.stringify(launch),
     });
   } catch(err) {

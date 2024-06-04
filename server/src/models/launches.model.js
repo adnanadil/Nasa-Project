@@ -9,7 +9,7 @@ const launch = {
     mission: "Kepler Exploration X",
     rocket: "Explorer IS1",
     launchDate: new Date('December 27, 2030'),
-    destination: "Kepler-442 b",
+    target: "Kepler-442 b",
     customer: ["ZTM","NASA"],
     upcoming: true,
     success: true
@@ -37,11 +37,25 @@ function addNewLaunch(newLaunch) {
     }))
 }
 
+function doesLaunchExist(launchID) {
+    return launches.has(launchID)
+}
+
+function abortMission(launchID) {
+    var aborted = launches.get(launchID)
+    aborted.upcoming = false
+    aborted.success = false
+
+    return aborted
+}
+
 
 // Export the function like below but when you use it 
 // you have to make use of the () .. only while using not when
 // importing it. In this case in the controller. 
 module.exports = {
     getAllLaunches,
-    addNewLaunch
+    addNewLaunch,
+    doesLaunchExist,
+    abortMission
 }
