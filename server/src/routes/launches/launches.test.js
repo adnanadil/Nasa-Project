@@ -1,3 +1,22 @@
+// Let me give an explanation of this. So we have the Jest library which helps us to 
+// have the test runner, test fixtures, assertions and mocking data all in one library
+
+// However we are making use of the Supertest library to call our own API which is this app
+// describe helps us to add many tests under it.
+
+// in the first part we make use of the "expect" of the supertest library which is to test get
+
+// For post we make use of the combination of both. 
+// We use the JEST expect to compare the data that we get we get back.
+
+// Always remember response.body will give you the data that has been sent back. 
+
+// Here we test the get end point and then we check the post, were we test the posting part 
+// and make sure that the data and the date sent correctly gives us the correct response.
+
+// Then we test the error cases where a field is missing or the data that is sent is not corect
+
+
 const request = require('supertest')
 const {app} = require('../../app')
 
