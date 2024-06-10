@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "PORT=8000 nodemon src/server.js",
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "watch": "PORT=8000 nodemon src/server.js",
     "start": "PORT=8000 node src/server.js"
   },
   "author": "",
@@ -15,5 +17,9 @@
     "express": "^4.19.2",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }
