@@ -14,6 +14,10 @@ const {parse} = require('csv-parse')
 const path = require('path')
 const { error } = require('console')
 
+// Importing the Mongoose Model here 
+const { planetModel } = require('./planets.mongoose')
+
+
 // We do this make sure that we able to get the path of the file regardless of the os the code is 
 // running in.
 const filePath = path.join(__dirname, '..' , '..', 'data', 'kepler_data.csv') 
@@ -55,6 +59,25 @@ async function waitForPlanets() {
 waitForPlanets()
 */
 
+// This function is used to look for throught the planets collection
+// if we have the planet it will be updated and a new document will not be created 
+// if the planet is not there in that case it will a new document is created in the 
+// planets collect
+
+async function upsertNewPlanets(data) {
+    // Here we look in the first part (condition), we then say what we want to update 
+    // and finaly the last part is option 
+    try{
+        await planetModel.updateOne(
+            {keplerName: data.kepler_name},
+            {keplerName: data.kepler_name},
+            {upsert: true}
+        )
+    }catch(error){
+        console.log(`Could not save the planet ${error}`)
+    }
+}
+
 // Now we have to read the file which will come as stream and csv parse it to get 
 // it in the form of data that JS can read  
 
@@ -69,7 +92,9 @@ const getPlanetsPromise = new Promise ((resolve, reject) => {
         // Here we will filter the data and add only specific planets
         if (checkHabitualPlanets(data)){
             // Add the planet to the list 
-            habitualPlanets.push(data)
+            // habitualPlanets.push(data)
+            // Add the planets to the database
+            upsertNewPlanets(data)
         }
     })
     .on('error', (error) =>{
@@ -81,9 +106,15 @@ const getPlanetsPromise = new Promise ((resolve, reject) => {
 // Now the above code (Promise) will be exported and we will import it in the server.js
 // which is the start of the app and there we will implement then async fuciton.  
 
+async function getAllPlanetsFromDB() {
+    const data = await planetModel.find({}, {_id: 0, __v: 0})
+    // console.log(`Hi: ${data}`)
+    return data
+}
 
 // Tips to export: https://www.tutorialsteacher.com/nodejs/nodejs-module-exports
 module.exports = {
     planets: habitualPlanets,
-    getPlanetsPromise: getPlanetsPromise
+    getPlanetsPromise: getPlanetsPromise,
+    getAllPlanetsFromDB: getAllPlanetsFromDB
 }
