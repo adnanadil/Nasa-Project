@@ -1,7 +1,8 @@
-const {getAllLaunches, addNewLaunch, doesLaunchExist, abortMission} = require('../../models/launches.model')
+const {getAllLaunches, scheduleNewLauch, doesLaunchExist, abortMission} = require('../../models/launches.model')
 
-function httpGetAllLaunches (req, res) {
-    return res.status(200).json(getAllLaunches())
+async function httpGetAllLaunches (req, res) {
+    // return res.status(200).json( await getAllLaunches())
+    return res.status(200).json(await getAllLaunches())
 }
 
 function httpAddNewLaunches(req, res) {
@@ -26,7 +27,8 @@ function httpAddNewLaunches(req, res) {
     
     newLaunch.launchDate = new Date(newLaunch.launchDate)
 
-    addNewLaunch(newLaunch)
+    // addNewLaunch(newLaunch)
+    scheduleNewLauch(newLaunch)
     
     // Return is in place to make sure that there is no other res after this 
     // this is mostly used in express as safety as we cannot have two res.send in 
@@ -34,11 +36,11 @@ function httpAddNewLaunches(req, res) {
     return res.status(201).send(newLaunch)
 }
 
-function httpAbortLaunch(req,res) {
+async function httpAbortLaunch(req,res) {
     // Convert the string to number as flightNumber is a string hence +
     const id = +req.params.id
 
-    if(!doesLaunchExist(id)){
+    if(!await doesLaunchExist(id)){
         return res.status(400).send({
             message: "Launch Not Found"
         })
