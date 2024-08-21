@@ -22,12 +22,15 @@
 const request = require('supertest')
 const {app} = require('../../app')
 const {connectToMongoDB, disconnectToMongoDB} = require('../../services/mongo')
-
+const {
+    loadPlanetsData,
+  } = require('../../models/planets.model');
 
 describe('Testing Launches API', () => {
 
     beforeAll(async () => {
         await connectToMongoDB()
+        await loadPlanetsData()
     })
 
     // afterAll(async () => {
