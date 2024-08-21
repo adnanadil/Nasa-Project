@@ -8,9 +8,9 @@ jobs:
   build: 
     runs-on: ubuntu-latest
     steps:
-      - uses: action/checkout@3
-      - name: Use Node.hs==js version 20
-        uses: actions/setup-node@3
+      - uses: action/checkout@v3
+      - name: Use Node.js version 20
+        uses: actions/setup-node@v3
         with:
           node-version: '20'
       - run: npm install 
