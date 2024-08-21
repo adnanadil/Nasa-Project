@@ -23,19 +23,19 @@ const request = require('supertest')
 const {app} = require('../../app')
 const {connectToMongoDB, disconnectToMongoDB} = require('../../services/mongo')
 const {
-    loadPlanetsData,
+    getPlanetsPromise,
   } = require('../../models/planets.model');
 
 describe('Testing Launches API', () => {
 
     beforeAll(async () => {
         await connectToMongoDB()
-        await loadPlanetsData()
+        await getPlanetsPromise()
     })
 
-    // afterAll(async () => {
-    //     await disconnectToMongoDB()
-    // })
+    afterAll(async () => {
+        await disconnectToMongoDB()
+    })
 
     describe('Testing /launches Get', () => {
         test('Must Respond with status 200', async () => {
