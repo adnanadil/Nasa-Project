@@ -1,0 +1,22 @@
+{
+  "name": "nasa-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test --prefix server && npm test --prefix client",
+    "hello": "npm watch --prefix server",
+    "react": "npm run start --prefix client",
+    "serverClient": "npm test --prefix server & npm run start --prefix client",
+    "deploy": "npm run build --prefix client && npm run watch --prefix server",
+    "cluster-deploy": "npm run build --prefix client && npm run cluster --prefix server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.4.4",
+    "pm2": "^5.4.1"
+  }
+}
