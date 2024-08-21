@@ -1,8 +1,14 @@
 const {getAllLaunches, scheduleNewLauch, doesLaunchExist, abortMission} = require('../../models/launches.model')
 
+const {pagination} = require('../../services/query')
+
 async function httpGetAllLaunches (req, res) {
+    // Mongo does not have page number so we will have a helped function to 
+    // create the page number.
+    const {limit, skip} = pagination(req.query.limit, req.query.page)
+    console.log(`Helloooo ${limit} & ${skip}`)
     // return res.status(200).json( await getAllLaunches())
-    return res.status(200).json(await getAllLaunches())
+    return res.status(200).json(await getAllLaunches(skip, limit))
 }
 
 function httpAddNewLaunches(req, res) {

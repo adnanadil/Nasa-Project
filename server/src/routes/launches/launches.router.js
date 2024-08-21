@@ -4,9 +4,9 @@ const {httpGetAllLaunches, httpAddNewLaunches, httpAbortLaunch} = require('./lau
 
 const launchesRouter = express.Router()
 
-launchesRouter.get('/launches',httpGetAllLaunches)
-launchesRouter.post('/launches', httpAddNewLaunches)
-launchesRouter.delete('/launches/:id', httpAbortLaunch)
+launchesRouter.get('/',httpGetAllLaunches)
+launchesRouter.post('/', httpAddNewLaunches)
+launchesRouter.delete('/:id', httpAbortLaunch)
 
 
 module.exports= {

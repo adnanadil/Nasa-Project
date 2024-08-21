@@ -2,6 +2,9 @@
 const {launchesModel} = require('./launches.mongoose')
 const {planetModel} = require('./planets.mongoose')
 
+const axios = require('axios')
+const SpaceX_API_Link = "https://api.spacexdata.com/v4/launches/query"
+
 const DEFAULT_FLIGHT_NUMBER = 100;
 
 // Here we will create a map 
@@ -9,36 +12,24 @@ const launches = new Map()
 let latestFlightNumber = 100;
 
 // This is the default launch
-const launch = {
-    flightNumber: 100,
-    mission: "Kepler Exploration X",
-    rocket: "Explorer IS1",
-    launchDate: new Date('December 27, 2030'),
-    target: "Kepler-442 b",
-    customer: ["ZTM","NASA"],
-    upcoming: true,
-    success: true
-}
+// const launch = {
+//     flightNumber: 100,
+//     mission: "Kepler Exploration X",
+//     rocket: "Explorer IS1",
+//     launchDate: new Date('December 27, 2030'),
+//     target: "Kepler-442 b",
+//     customer: ["ZTM","NASA"],
+//     upcoming: true,
+//     success: true
+// }
 
-launches.set(launch.flightNumber, launch)
+// launches.set(launch.flightNumber, launch)
 
 // saveLauch(launch)
 
 async function saveLauch(lauchData) {
 
-    //const lauchData = launch
-    // check if the planet data is present in the db 
-
-    const planet = await planetModel.findOne({
-        keplerName: lauchData.target
-    })
-
-    if(!planet) {
-        throw new Error("No Such planet, So where are you going ??")
-        // return "No Such planet, So where are you going ??"
-    }
-
-    await launchesModel.updateOne(
+    await launchesModel.findOneAndUpdate(
         {flightNumber: lauchData.flightNumber},
         lauchData,
         {
@@ -47,9 +38,80 @@ async function saveLauch(lauchData) {
     )
 }
 
-async function getAllLaunches() {
+async function getLaunchesFromAPI() {
+    
+    const firstLauch = await findLauch({
+        flightNumber: 1,
+        rocket: 'Falcon 1',
+        mission: 'FalconSat'
+    })
+
+    if (!firstLauch) {
+        console.log('We have the lauches from the API in our DB')
+    }
+    else{
+        populateLauches()
+    }
+}
+
+async function populateLauches() {
+    const SpaceX_lauches = await axios.post(SpaceX_API_Link, {
+        query: {},
+        options: {
+            pagination: false,
+            populate : [
+                {
+                    path: "rocket",
+                    select :{
+                        name: 1
+                    }
+                },
+                {
+                    path: "payloads",
+                    select: {
+                        customers : 1
+                    }
+                }
+            ]
+        }
+    });
+
+
+    const lauchDocs = SpaceX_lauches.data.docs
+    for (const launchData of lauchDocs){
+        const rawCustomers = launchData["payloads"]
+        const customerArray = rawCustomers.flatMap((rawCustomer) => {
+            return rawCustomer["customers"]
+        })
+        // console.log(launchData)
+        const eachLauchData = {
+            flightNumber : launchData["flight_number"],
+            mission:launchData["name"],
+            rocket: launchData["rocket"]["name"],
+            launcheDate: launchData["date_local"],
+            upcoming: launchData["upcoming"],
+            success: launchData["success"],
+            customers: customerArray, 
+        }
+
+        // console.log(eachLauchData)
+        await saveLauch(eachLauchData)
+
+    }
+}
+
+
+
+async function getAllLaunches(skip, limit) {
     // return Array.from(launches.values())
-    return await launchesModel.find({})
+    return await launchesModel
+    .find(
+        {},
+        {'id': 0, '__v':0}
+    )
+    .sort({flightNumber: 1})
+    .skip(skip)
+    .limit(limit)
 }
 
 //We will schedule a new lauch but we have to make sure that 
@@ -64,6 +126,18 @@ async function scheduleNewLauch(newLanch) {
 
     // Now we will process the NewLauch to be added and send to the saveLauch()
     // Function. 
+
+    // check if the planet data is present in the db 
+    const lauchData = newLanch
+
+    const planet = await planetModel.findOne({
+        keplerName: lauchData.target
+    })
+
+    if(!planet) {
+        throw new Error("No Such planet, So where are you going ??")
+        // return "No Such planet, So where are you going ??"
+    }
 
     await getLatestFlightNumber()
 
@@ -92,9 +166,13 @@ async function getLatestFlightNumber() {
     return latestFlightNumber.flightNumber
 }
 
+async function findLauch(filer) {
+    return await launchesModel.find(filer)
+}
+
 
 async function doesLaunchExist(launchID) {
-    return await launchesModel.findOne({flightNumber: launchID})
+    return await findLauch({flightNumber: launchID})
 
 }
 
@@ -112,6 +190,7 @@ async function abortMission(launchID) {
 // you have to make use of the () .. only while using not when
 // importing it. In this case in the controller. 
 module.exports = {
+    getLaunchesFromAPI,
     getAllLaunches,
     // addNewLaunch,
     doesLaunchExist,
