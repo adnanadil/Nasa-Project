@@ -6,7 +6,7 @@ on:
     branches: [main]
 jobs:
   build: 
-    runs-on: umbuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: action/checkout@3
       - name: Use Node.hs==js version 20
