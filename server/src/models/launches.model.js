@@ -139,11 +139,12 @@ async function scheduleNewLauch(newLanch) {
         // return "No Such planet, So where are you going ??"
     }
 
-    await getLatestFlightNumber()
+    var newFlightNumber = await getLatestFlightNumber()
+    console.log(`Hello there: ${newFlightNumber}`)
 
     const newLanuchToAdd = Object.assign(
         newLanch,{
-            flightNumber: latestFlightNumber++,
+            flightNumber: newFlightNumber+1,
             customers: ['Zero To Mastery', 'NASA'],
             success: true,
             upcoming: true
@@ -158,7 +159,6 @@ async function getLatestFlightNumber() {
     const latestFlightNumber = await launchesModel
         .findOne()
         .sort('-flightNumber')
-
     if (!latestFlightNumber){
         return DEFAULT_FLIGHT_NUMBER
     }

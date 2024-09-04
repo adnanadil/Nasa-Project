@@ -1,14 +1,13 @@
 const {getAllLaunches, scheduleNewLauch, doesLaunchExist, abortMission} = require('../../models/launches.model')
 
-const {pagination} = require('../../services/query')
+const {getPagination} = require('../../services/query')
 
 async function httpGetAllLaunches (req, res) {
     // Mongo does not have page number so we will have a helped function to 
     // create the page number.
-    const {limit, skip} = pagination(req.query.limit, req.query.page)
-    console.log(`Helloooo ${limit} & ${skip}`)
-    // return res.status(200).json( await getAllLaunches())
-    return res.status(200).json(await getAllLaunches(skip, limit))
+    const { skip, limit } = getPagination(req.query);
+    const launches = await getAllLaunches(skip, limit);
+    return res.status(200).json(launches);
 }
 
 function httpAddNewLaunches(req, res) {
@@ -39,7 +38,7 @@ function httpAddNewLaunches(req, res) {
     // Return is in place to make sure that there is no other res after this 
     // this is mostly used in express as safety as we cannot have two res.send in 
     // a function.
-    return res.status(201).send(newLaunch)
+    return res.status(201).json(newLaunch)
 }
 
 async function httpAbortLaunch(req,res) {

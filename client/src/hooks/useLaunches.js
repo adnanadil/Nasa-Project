@@ -17,7 +17,7 @@ function useLaunches(onSuccessSound, onAbortSound, onFailureSound) {
 
   useEffect(() => {
     getLaunches();
-  }, [getLaunches]);
+  }, [getLaunches, launches]);
 
   const submitLaunch = useCallback(async (e) => {
     e.preventDefault();

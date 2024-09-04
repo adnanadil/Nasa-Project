@@ -1,7 +1,4 @@
-//const API_URL = 'v1';
-const API_URL = 'http://localhost:8000';
-
-// This is were we call to our server.
+const API_URL = 'v1';
 
 // Load planets and return as JSON.
 async function httpGetPlanets() {
@@ -26,8 +23,6 @@ async function httpSubmitLaunch(launch) {
       headers: {
         "Content-Type": "application/json",
       },
-      // Because our data was in the form of object and we can only send JSON hence 
-      // we convert it. 
       body: JSON.stringify(launch),
     });
   } catch(err) {

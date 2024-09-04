@@ -7,7 +7,7 @@ const {connectToMongoDB} = require('./services/mongo')
 const {getPlanetsPromise, getAllPlanetsFromDB} = require('./models/planets.model')
 const {getLaunchesFromAPI} = require('./models/launches.model')
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8000
 
 const server = http.createServer(app)
 

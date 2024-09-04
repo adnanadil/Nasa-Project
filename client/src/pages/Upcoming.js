@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { 
   withStyles,
   Appear,
@@ -24,6 +24,10 @@ const Upcoming = props => {
     classes,
     abortLaunch,
   } = props;
+
+  useEffect(() => {
+    console.log('re-render')
+  }, []);
 
   const tableBody = useMemo(() => {
     return launches?.filter((launch) => launch.upcoming)

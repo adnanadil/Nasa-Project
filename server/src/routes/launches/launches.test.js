@@ -31,9 +31,9 @@ describe('Testing Launches API', () => {
         await getPlanetsPromise
     })
 
-    afterAll(async () => {
-        await disconnectToMongoDB()
-    })
+    // afterAll(async () => {
+    //     await disconnectToMongoDB()
+    // })
 
     describe('Testing /launches Get', () => {
         test('Must Respond with status 200', async () => {
